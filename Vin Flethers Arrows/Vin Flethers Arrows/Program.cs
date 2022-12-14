@@ -1,4 +1,6 @@
-﻿while (true)
+﻿
+bool buyArrows = true;
+while (buyArrows)
 {
 
     // Get user to choose arrowhead.
@@ -47,9 +49,12 @@
     string answer = Console.ReadLine()!;
     if (answer.ToUpper() != "Y")
     {
-        break;
+        buyArrows = false;
     }
 }
+
+
+
 class Arrow
 {
     public Head _arrowhead;
@@ -70,6 +75,11 @@ class Arrow
         _fletching = fletching;
     }
 
+    /// <summary>
+    /// Calculates the cost of an arrow based on its head material, shaft
+    /// length, and fletching material.
+    /// </summary>
+    /// <returns>Float value of the arrow in gold.</returns>
     public float GetCost()
     {
         return GetHeadCost(_arrowhead) +
@@ -77,7 +87,7 @@ class Arrow
             GetFletchingCost(_fletching);
     }
 
-    public static float GetHeadCost(Head arrowhead)
+    static float GetHeadCost(Head arrowhead)
     {
         return arrowhead switch
         {
@@ -88,12 +98,12 @@ class Arrow
         };
     }
 
-    public static float GetShaftCost(int shaftLength)
+    static float GetShaftCost(int shaftLength)
     {
         return shaftLength * 0.05F;
     }
 
-    public static float GetFletchingCost(Fletch fletching)
+    static float GetFletchingCost(Fletch fletching)
     {
         return fletching switch
         {
