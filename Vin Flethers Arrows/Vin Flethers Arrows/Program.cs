@@ -6,25 +6,23 @@ while (buyArrows)
     // Get user to choose arrowhead.
     Console.Write($"Pick an arrowhead: 1: {Head.Wood}," +
         $" 2: {Head.Steel}, or 3: {Head.Obsidian} ...");
-    Arrow userArrow = new()
+
+    Head arrowhead = Console.ReadLine() switch
     {
-        _arrowhead = Console.ReadLine() switch
-        {
-            "1" => Head.Wood,
-            "2" => Head.Steel,
-            "3" => Head.Obsidian,
-            _ => Head.Unknown
-        }
+        "1" => Head.Wood,
+        "2" => Head.Steel,
+        "3" => Head.Obsidian,
+        _ => Head.Unknown
     };
     Console.WriteLine();
 
     // Get the user to enter the shaft length.
+    int shaftLengthCm;
     while (true)
     {
         Console.Write($"Enter the desired shaft length: (Between 60 and 100 cm) ...");
-        if (int.TryParse(Console.ReadLine(), out int shaftLentchCm))
+        if (int.TryParse(Console.ReadLine(), out shaftLengthCm))
         {
-            userArrow._shaftLength = shaftLentchCm;
             Console.WriteLine();
             break;
         }
@@ -33,7 +31,7 @@ while (buyArrows)
     // Get the user to choose the fletching.
     Console.Write($"Pick the fletching: 1: {Fletch.Goose}, 2: {Fletch.Plastic}," +
         $" or 3: {Fletch.Turkey} ... ");
-    userArrow._fletching = Console.ReadLine() switch
+    Fletch fletching = Console.ReadLine() switch
     {
         "1" => Fletch.Goose,
         "2" => Fletch.Plastic,
@@ -42,7 +40,11 @@ while (buyArrows)
     };
     Console.WriteLine();
 
-    Console.WriteLine($"An arrow like that will run you about {userArrow.GetCost():n0} gold.");
+    Arrow userArrow = new(arrowhead, shaftLengthCm, fletching);
+
+    Console.WriteLine($"A {userArrow.GetShaftLength()} cm arrow with a head made of " +
+        $"{userArrow.GetArrowHead()} and {userArrow.GetFletching()} fletching will run you" +
+        $"about {userArrow.GetCost():n0} gold.");
     Console.WriteLine();
 
     Console.Write("Buy another arrow? Y/N...");
@@ -57,9 +59,9 @@ while (buyArrows)
 
 class Arrow
 {
-    public Head _arrowhead;
-    public int _shaftLength;
-    public Fletch _fletching;
+    private Head _arrowhead;
+    private int _shaftLength;
+    private Fletch _fletching;
 
     public Arrow()
     {
@@ -71,9 +73,15 @@ class Arrow
     public Arrow(Head arrowhead, int shaftLength, Fletch fletching)
     {
         _arrowhead = arrowhead;
-        _shaftLength = shaftLength;
+        if (shaftLength < 60) _shaftLength = 60;
+        else if (shaftLength > 100) _shaftLength = 100;
+        else _shaftLength = shaftLength;
         _fletching = fletching;
     }
+
+    public Head GetArrowHead() => _arrowhead;
+    public int GetShaftLength() => _shaftLength;
+    public Fletch GetFletching() => _fletching;
 
     /// <summary>
     /// Calculates the cost of an arrow based on its head material, shaft
