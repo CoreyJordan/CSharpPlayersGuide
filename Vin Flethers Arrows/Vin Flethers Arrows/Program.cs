@@ -42,46 +42,33 @@ while (buyArrows)
 
     Arrow userArrow = new(arrowhead, shaftLengthCm, fletching);
 
-    Console.WriteLine($"A {userArrow.GetShaftLength()} cm arrow with a head made of " +
-        $"{userArrow.GetArrowHead()} and {userArrow.GetFletching()} fletching will run you" +
+    Console.WriteLine($"A {userArrow.ShaftLength} cm arrow with a head made of " +
+        $"{userArrow.ArrowHead} and {userArrow.Fletching} fletching will run you " +
         $"about {userArrow.GetCost():n0} gold.");
     Console.WriteLine();
 
     Console.Write("Buy another arrow? Y/N...");
     string answer = Console.ReadLine()!;
-    if (answer.ToUpper() != "Y")
-    {
-        buyArrows = false;
-    }
+
+    if (answer.ToUpper() != "Y") buyArrows = false;
 }
 
 
 
 class Arrow
 {
-    private Head _arrowhead;
-    private int _shaftLength;
-    private Fletch _fletching;
-
-    public Arrow()
-    {
-        _arrowhead = Head.Unknown;
-        _shaftLength = 0;
-        _fletching = Fletch.Unknown;
-    }
+    public Head ArrowHead { get; }
+    public int ShaftLength { get; }
+    public Fletch Fletching { get; }
 
     public Arrow(Head arrowhead, int shaftLength, Fletch fletching)
     {
-        _arrowhead = arrowhead;
-        if (shaftLength < 60) _shaftLength = 60;
-        else if (shaftLength > 100) _shaftLength = 100;
-        else _shaftLength = shaftLength;
-        _fletching = fletching;
+        ArrowHead = arrowhead;
+        if (shaftLength < 60) ShaftLength = 60;
+        else if (shaftLength > 100) ShaftLength = 100;
+        else ShaftLength = shaftLength;
+        Fletching = fletching;
     }
-
-    public Head GetArrowHead() => _arrowhead;
-    public int GetShaftLength() => _shaftLength;
-    public Fletch GetFletching() => _fletching;
 
     /// <summary>
     /// Calculates the cost of an arrow based on its head material, shaft
@@ -90,9 +77,9 @@ class Arrow
     /// <returns>Float value of the arrow in gold.</returns>
     public float GetCost()
     {
-        return GetHeadCost(_arrowhead) +
-            GetShaftCost(_shaftLength) +
-            GetFletchingCost(_fletching);
+        return GetHeadCost(ArrowHead) +
+            GetShaftCost(ShaftLength) +
+            GetFletchingCost(Fletching);
     }
 
     static float GetHeadCost(Head arrowhead)
