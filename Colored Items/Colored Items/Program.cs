@@ -1,11 +1,8 @@
-﻿Sword sword = new();
-Colored<Sword> blueSword = new(sword, ConsoleColor.Blue);
+﻿Colored<Sword> blueSword = new(new Sword(), ConsoleColor.Blue);
 
-Bow bow = new();
-Colored<Bow> redBow = new(bow, ConsoleColor.Red);
+Colored<Bow> redBow = new(new Bow(), ConsoleColor.Red);
 
-Axe axe = new();
-Colored<Axe> greenAxe = new(axe, ConsoleColor.Green);
+Colored<Axe> greenAxe = new(new Axe(), ConsoleColor.Green);
 
 blueSword.Display();
 redBow.Display();
