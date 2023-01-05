@@ -18,9 +18,10 @@ internal class Game
     /// <param name="size">Grid size of the cavern. Grid is square.</param>
     /// <param name="start">Starting location to be passed to the grid</param>
     public Game(int size,
-                Location start)
+                Location start,
+                int pitQty)
     {
-        Grid = new(size, start);
+        Grid = new(size, start, pitQty);
         Player = new(start);
         Fountain = new Fountain();
         GameOver = false;

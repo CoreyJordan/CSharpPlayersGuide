@@ -1,4 +1,5 @@
-﻿using The_Fountain_of_Objects;
+﻿using System.Drawing;
+using The_Fountain_of_Objects;
 using The_Fountain_of_Objects.Enviroment;
 
 Game game = CreateGame();
@@ -6,32 +7,56 @@ game.Run();
 
 
 
-
-
 Game CreateGame()
 {
+    MapSize size = GetMapSize();
+
+    int mapSize = SetMapSize(size);
     Location start = new(0,0);
-    Game game = new(GetMapSize(), start);
+    int pitQty = GetNumberofPits(size);
+
+    Game game = new(mapSize, start, pitQty);
 
     return game;
 }
 
-int GetMapSize()
+MapSize GetMapSize()
 {
-    int size = 0;
-    while (size == 0)
+    MapSize size = MapSize.None;
+    while (size == MapSize.None)
     {
         Write("Select a dungeon size => small, medium, or large: ");
         string? mapChoice = ReadLine() ?? "";
-
         size = mapChoice switch
         {
-            "small" => 4,
-            "medium" => 6,
-            "large" => 8,
-            _ => 0
+            "small" => MapSize.Small,
+            "medium" => MapSize.Medium,
+            "large" => MapSize.Large,
+            _=> MapSize.None
         };
     }
     return size;
 }
 
+int SetMapSize(MapSize choice)
+{
+    return choice switch
+    {
+        MapSize.Small => 4,
+        MapSize.Medium => 6,
+        MapSize.Large => 8,
+        _ => 0
+    };
+}
+
+int GetNumberofPits(MapSize choice)
+{
+    return choice switch
+    {
+        MapSize.Small => 1,
+        MapSize.Medium => 2,
+        MapSize.Large => 4,
+        _=> 0
+    };
+
+}

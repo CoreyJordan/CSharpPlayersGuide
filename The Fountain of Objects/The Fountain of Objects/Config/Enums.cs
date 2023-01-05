@@ -27,3 +27,11 @@ public enum Direction
     West,
     East
 }
+
+public enum MapSize
+{
+    None,
+    Small,
+    Medium,
+    Large
+}

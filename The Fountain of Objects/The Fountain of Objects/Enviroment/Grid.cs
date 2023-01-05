@@ -12,7 +12,7 @@ internal class Grid
     /// </summary>
     /// <param name="mapSize">The width and height of the map grid.</param>
     /// <param name="start">The starting position of the player.</param>
-    public Grid(int mapSize, Location start)
+    public Grid(int mapSize, Location start, int pitQty)
     {
         // Create the game grid.
         Map = new RoomType[mapSize, mapSize];
@@ -27,8 +27,7 @@ internal class Grid
         Map[fountain.Row, fountain.Col] = RoomType.Fountain;
 
         // Set the pit locations.
-        int pitQuantity = GetNumberOfPits(mapSize);
-        for (int i = 0; i < pitQuantity; i++)
+        for (int i = 0; i < pitQty; i++)
         {
             Location pit = SetRoom(mapSize);
             Map[pit.Row, pit.Col] = RoomType.Pit;
@@ -115,15 +114,5 @@ internal class Grid
             Border[upper, i] = Edge.Upper;
             Border[lower, i] = Edge.Lower;
         }
-    }
-
-    private int GetNumberOfPits(int mapSize)
-    {
-        int pit = 1;
-        for (int i = 4; i < mapSize; i += 2)
-        {
-            pit *= 2;
-        }
-        return pit;
     }
 }
