@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using The_Fountain_of_Objects.Command;
-using The_Fountain_of_Objects.Config;
+﻿using The_Fountain_of_Objects.Command;
 using The_Fountain_of_Objects.Entities;
 using The_Fountain_of_Objects.Enviroment;
 using The_Fountain_of_Objects.Senses;
@@ -35,11 +33,21 @@ internal class Game
     {
         while (!GameOver)
         {
+            // Tell the player where they are.
             PrintRoom(Player.Location);
 
-            // TODO Describe room
-            IDescription description = DescribeCurrentRoom(Player.Location);
+            // Tell the player what they sense IN the current room.
+            IDescription description = GetSenseOf(Player.Location);
             description.DescribeSense(this);
+
+            // Tell the player what they sense from AROUND the current room.
+            var adjLocations = Grid.GetAdjacentTypes(Player.Location,
+                                                     Grid.Map.GetLength(0));
+            foreach (var room in adjLocations)
+            {
+                IDescription nearby = GetSenseNear(room);
+                nearby.DescribeSense(this);
+            }
 
             ICommand command = GetCommand();
             command.Execute(this);
@@ -54,7 +62,7 @@ internal class Game
             ConsoleColor.Cyan);
     }
 
-    private IDescription DescribeCurrentRoom(Location location)
+    private IDescription GetSenseOf(Location location)
     {
         var room = Grid.GetRoomType(location);
         switch (room)
@@ -65,6 +73,19 @@ internal class Game
                 return new SenseFountain(true);
             default:
                 return new SenseEmpty(true);
+        }
+    }
+    
+    private IDescription GetSenseNear(RoomType room)
+    {
+        switch (room)
+        {
+            case RoomType.Entrance:
+                return new SenseEntrance(false);
+            case RoomType.Fountain:
+                return new SenseFountain(false);
+            default:
+                return new SenseEmpty(false);
         }
     }
 

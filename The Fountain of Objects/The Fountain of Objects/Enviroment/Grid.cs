@@ -1,6 +1,4 @@
-﻿using The_Fountain_of_Objects.Config;
-
-namespace The_Fountain_of_Objects.Enviroment;
+﻿namespace The_Fountain_of_Objects.Enviroment;
 internal class Grid
 {
     /// <summary>
@@ -39,6 +37,34 @@ internal class Grid
     public Edge GetBorder(Location location)
     {
         return Border[location.Row, location.Col];
+    }
+
+    /// <summary>
+    /// Compile a list of adjacent room types to the present location.
+    /// </summary>
+    public List<RoomType> GetAdjacentTypes(Location location, int size)
+    {
+        List<RoomType> types = new();
+
+        // Collect all possible adjacent locations.
+        List<Location> adjLocations = new()
+        {
+            new(location.Row - 1, location.Col),
+            new(location.Row + 1, location.Col),
+            new(location.Row, location.Col + 1),
+            new(location.Row, location.Col - 1)
+        };
+
+        // Check if adjacent location actually on the grid.
+        foreach (var adjLocation in adjLocations)
+        {
+            if (adjLocation.Row >= 0 && adjLocation.Row < size &&
+                adjLocation.Col >= 0 && adjLocation.Col < size) 
+            {
+                types.Add(GetRoomType(adjLocation));
+            }
+        }
+        return types;
     }
 
     private Location GetRandomRoom(int max)

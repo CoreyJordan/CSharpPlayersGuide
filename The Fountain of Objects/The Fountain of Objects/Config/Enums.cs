@@ -1,6 +1,4 @@
-﻿namespace The_Fountain_of_Objects.Config;
-
-public enum RoomType
+﻿public enum RoomType
 {
     Empty,
     Entrance,

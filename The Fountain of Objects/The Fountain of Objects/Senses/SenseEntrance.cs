@@ -15,5 +15,10 @@ internal class SenseEntrance : IDescription
             Display.WriteLine("You see light flooding into the cavern from beyond",
                               ConsoleColor.Cyan);
         }
+        else if (!InRoom)
+        {
+            Display.WriteLine("You can smell fresh air blowing in from nearby",
+                              ConsoleColor.Blue);
+        }
     }
 }

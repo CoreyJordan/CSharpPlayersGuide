@@ -1,6 +1,4 @@
-﻿using The_Fountain_of_Objects.Config;
-
-namespace The_Fountain_of_Objects.Senses;
+﻿namespace The_Fountain_of_Objects.Senses;
 
 internal class SenseFountain : IDescription
 {
@@ -24,6 +22,17 @@ internal class SenseFountain : IDescription
         {
             Display.WriteLine("You are in the fountain room",
                 ConsoleColor.Cyan);
+        }
+        else if (!InRoom && game.Fountain.Enabled)
+        {
+            Display.WriteLine("You hear the faint sound of rushing water.",
+                ConsoleColor.Cyan);
+        }
+        else if (!InRoom && !game.Fountain.Enabled)
+        {
+            Display.WriteLine("You hear the faint sound of water dripping " +
+                "from somewhere nearby",
+                ConsoleColor.Blue);
         }
     }
 }

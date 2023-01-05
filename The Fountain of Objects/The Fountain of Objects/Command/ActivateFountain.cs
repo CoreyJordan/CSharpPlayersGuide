@@ -1,5 +1,4 @@
-﻿using The_Fountain_of_Objects.Config;
-using The_Fountain_of_Objects.Enviroment;
+﻿using The_Fountain_of_Objects.Enviroment;
 
 namespace The_Fountain_of_Objects.Command;
 internal class ActivateFountain : ICommand
