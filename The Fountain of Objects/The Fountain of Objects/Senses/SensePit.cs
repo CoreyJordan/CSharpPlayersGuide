@@ -5,6 +5,6 @@ internal class SensePit : IDescription
     {                    
         Display.WriteLine("A draft of damp dank air brushes past, warning " +
             "you there could\nbe danger nearby",
-            ConsoleColor.Yellow);
+            ConsoleColor.DarkYellow);
     }
 }

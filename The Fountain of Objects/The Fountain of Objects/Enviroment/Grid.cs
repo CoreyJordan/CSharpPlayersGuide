@@ -4,7 +4,7 @@ internal class Grid
     /// <summary>
     /// 2D grid of rooms by type.
     /// </summary>
-    public RoomType[,] Map { get; }
+    public RoomType[,] Map { get; set; }
     public Edge[,] Border { get; }
 
     /// <summary>
@@ -12,7 +12,7 @@ internal class Grid
     /// </summary>
     /// <param name="mapSize">The width and height of the map grid.</param>
     /// <param name="start">The starting position of the player.</param>
-    public Grid(int mapSize, Location start, int pitQty)
+    public Grid(int mapSize, Location start, int pitQty, int maelQty)
     {
         // Create the game grid.
         Map = new RoomType[mapSize, mapSize];
@@ -31,6 +31,13 @@ internal class Grid
         {
             Location pit = SetRoom(mapSize);
             Map[pit.Row, pit.Col] = RoomType.Pit;
+        }
+
+        // Set Maelstrom locations.
+        for (int i = 0; i < maelQty; i++)
+        {
+            Location maelstrom = SetRoom(mapSize);
+            Map[maelstrom.Row, maelstrom.Col] = RoomType.Maelstrom;
         }
     }
 
@@ -68,24 +75,46 @@ internal class Grid
         };
 
         // Check if adjacent location actually on the grid.
-        foreach (var adjLocation in adjLocations)
+        foreach (var room in adjLocations)
         {
-            if (adjLocation.Row >= 0 && adjLocation.Row < size &&
-                adjLocation.Col >= 0 && adjLocation.Col < size) 
+            if (room.Row >= 0 && room.Row < size &&
+                room.Col >= 0 && room.Col < size) 
             {
-                types.Add(GetRoomType(adjLocation));
+                types.Add(GetRoomType(room));
             }
         }
         return types;
     }
 
-    private Location GetRandomRoom(int max)
+    public List<RoomType> GetTangentTypes(Location location, int size)
     {
-        Random rand = new();
-        return new(rand.Next(max), rand.Next(max));
+        List<RoomType> types = new();
+
+        // Collect all possible tangent locations.
+        List<Location> tanLocations = new()
+        {
+            new(location.Row - 1, location.Col - 1),
+            new(location.Row - 1, location.Col + 1),
+            new(location.Row + 1, location.Col - 1),
+            new(location.Row + 1, location.Col + 1)
+        };
+
+        // Check list for existant rooms.
+        foreach (var room in tanLocations)
+        {
+            if (room.Row >= 0 && room.Row < size &&
+                room.Col >= 0 && room.Col < size)
+            {
+                types.Add(GetRoomType(room));
+            }
+        }
+        return types;
     }
 
-    private Location SetRoom(int max)
+    /// <summary>
+    /// Creates a random unique location.
+    /// </summary>
+    public Location SetRoom(int max)
     {
         var randomRoom = GetRandomRoom(max);
         while (GetRoomType(randomRoom) != RoomType.Empty)
@@ -93,6 +122,12 @@ internal class Grid
             randomRoom = GetRandomRoom(max);
         }
         return randomRoom;
+    }
+
+    private static Location GetRandomRoom(int max)
+    {
+        Random rand = new();
+        return new(rand.Next(max), rand.Next(max));
     }
 
     private void SetBorders(int size)

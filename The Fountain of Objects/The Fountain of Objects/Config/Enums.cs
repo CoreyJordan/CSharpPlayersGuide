@@ -3,7 +3,8 @@
     Empty,
     Entrance,
     Fountain,
-    Pit
+    Pit,
+    Maelstrom
 }
 
 public enum Edge

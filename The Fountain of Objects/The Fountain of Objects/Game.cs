@@ -6,9 +6,9 @@ using The_Fountain_of_Objects.Senses;
 namespace The_Fountain_of_Objects;
 internal class Game
 {
-    public Grid Grid { get; set; }
-    public Player Player { get; set; }
-    public Fountain Fountain { get; set; }
+    public Grid Grid { get; }
+    public Player Player { get; }
+    public Fountain Fountain { get; }
     public bool GameOver { get; set; }
 
     /// <summary>
@@ -19,9 +19,10 @@ internal class Game
     /// <param name="start">Starting location to be passed to the grid</param>
     public Game(int size,
                 Location start,
-                int pitQty)
+                int pitQty,
+                int maelstromQty)
     {
-        Grid = new(size, start, pitQty);
+        Grid = new(size, start, pitQty, maelstromQty);
         Player = new(start);
         Fountain = new Fountain();
         GameOver = false;
@@ -38,17 +39,11 @@ internal class Game
             // Tell the player where they are.
             PrintRoom(Player.Location);
 
-            // Tell the player what they sense IN the current room.
-            IDescription description = GetSenseOf(Player.Location);
-            description.DescribeSense(this);
-
-            // Tell the player what they sense from AROUND the current room.
-            var adjLocations = Grid.GetAdjacentTypes(Player.Location,
-                                                     Grid.Map.GetLength(0));
-            foreach (var room in adjLocations)
+            // Tell the player what they sense in the current room.
+            var mapSize = Grid.Map.GetLength(0);
+            foreach (var description in GetSense(mapSize))
             {
-                IDescription nearby = GetSenseNear(room);
-                nearby.DescribeSense(this);
+                description.DescribeSense(this);
             }
 
             // The PLAYER acts here, get and execute player command.
@@ -67,33 +62,34 @@ internal class Game
             ConsoleColor.Cyan);
     }
 
-    private IDescription GetSenseOf(Location location)
+    private List<IDescription> GetSense(int mapSize)
     {
-        var room = Grid.GetRoomType(location);
-        switch (room)
+        List<IDescription> sense = new();
+
+        // Add the current room to the list of sensory inputs.
+        var room = Grid.GetRoomType(Player.Location);
+        var adjacentRooms = Grid.GetAdjacentTypes(Player.Location, mapSize);
+        var tangentRooms = Grid.GetTangentTypes(Player.Location, mapSize);
+
+        if (room == RoomType.Empty) sense.Add(new SenseEmpty());
+        else if (room == RoomType.Entrance) sense.Add(new SenseEntrance(true));
+        else if (room == RoomType.Fountain) sense.Add(new SenseFountain(true));
+
+        foreach (var adjRoom in adjacentRooms)
         {
-            case RoomType.Entrance:
-                return new SenseEntrance(true);
-            case RoomType.Fountain:
-                return new SenseFountain(true);
-            default:
-                return new SenseEmpty();
+            if (adjRoom == RoomType.Entrance) sense.Add(new SenseEntrance(false));
+            else if (adjRoom == RoomType.Fountain) sense.Add(new SenseFountain(false));
+            else if (adjRoom == RoomType.Pit) sense.Add(new SensePit());
+            else if (adjRoom == RoomType.Empty) sense.Add(new SenseEmpty());
+            else if (adjRoom == RoomType.Maelstrom) sense.Add(new SenseMaelstrom(false));
         }
-    }
-    
-    private IDescription GetSenseNear(RoomType room)
-    {
-        switch (room)
+
+        foreach (var tanRoom in tangentRooms)
         {
-            case RoomType.Entrance:
-                return new SenseEntrance(false);
-            case RoomType.Fountain:
-                return new SenseFountain(false);
-            case RoomType.Pit:
-                return new SensePit();
-            default:
-                return new SenseEmpty();
+            if (tanRoom == RoomType.Maelstrom) sense.Add(new SenseMaelstrom(true));
         }
+
+        return sense;
     }
 
     private ICommand GetCommand()

@@ -14,8 +14,9 @@ Game CreateGame()
     int mapSize = SetMapSize(size);
     Location start = new(0,0);
     int pitQty = GetNumberofPits(size);
+    int maelstromsQty = GetNumberofMaelstroms(size);
 
-    Game game = new(mapSize, start, pitQty);
+    Game game = new(mapSize, start, pitQty, maelstromsQty);
 
     return game;
 }
@@ -58,5 +59,15 @@ int GetNumberofPits(MapSize choice)
         MapSize.Large => 4,
         _=> 0
     };
+}
 
+int GetNumberofMaelstroms(MapSize choice)
+{
+    return choice switch
+    {
+        MapSize.Small => 1,
+        MapSize.Medium => 1,
+        MapSize.Large => 2,
+        _ => 0
+    };
 }
