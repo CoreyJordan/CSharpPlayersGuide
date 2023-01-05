@@ -49,8 +49,11 @@ internal class Game
                 nearby.DescribeSense(this);
             }
 
+            // The PLAYER acts here, get and execute player command.
             ICommand command = GetCommand();
             command.Execute(this);
+
+            CheckState();
         }
     }
 
@@ -121,7 +124,8 @@ internal class Game
             }
             else
             {
-                Display.WriteLine("Hmm. I didn't quite get that.", ConsoleColor.Yellow);
+                Display.WriteLine("Hmm. I didn't quite get that.",
+                    ConsoleColor.Yellow);
                 validCommand = false;
                 // This is a placeholder command, not expected to ever reach.
                 // The compiler doesn't see the loop until we get valid command
@@ -130,5 +134,18 @@ internal class Game
 
         } while (!validCommand);
         return command;
+    }
+
+    private void CheckState()
+    {
+        if (Grid.GetRoomType(Player.Location) == RoomType.Entrance &&
+            Fountain.Enabled)
+        {
+            Display.WriteLine("VICTORY! You have activated the Fountain of " +
+                "Objects and escaped\nthe cavern with your life.",
+                ConsoleColor.Green);
+            ReadLine();
+            GameOver = true;
+        }
     }
 }
