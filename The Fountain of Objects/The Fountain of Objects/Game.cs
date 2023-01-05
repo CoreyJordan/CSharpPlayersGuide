@@ -31,6 +31,7 @@ internal class Game
     /// </summary>
     public void Run()
     {
+        Test(); // Displays the player location and a map of the grid
         while (!GameOver)
         {
             // Tell the player where they are.
@@ -75,7 +76,7 @@ internal class Game
             case RoomType.Fountain:
                 return new SenseFountain(true);
             default:
-                return new SenseEmpty(true);
+                return new SenseEmpty();
         }
     }
     
@@ -87,8 +88,10 @@ internal class Game
                 return new SenseEntrance(false);
             case RoomType.Fountain:
                 return new SenseFountain(false);
+            case RoomType.Pit:
+                return new SensePit();
             default:
-                return new SenseEmpty(false);
+                return new SenseEmpty();
         }
     }
 
@@ -147,5 +150,30 @@ internal class Game
             ReadLine();
             GameOver = true;
         }
+        else if (Grid.GetRoomType(Player.Location) == RoomType.Pit)
+        {
+            Display.WriteLine("DEATH! You have fallen into a pit trap",
+                ConsoleColor.Red);
+            ReadLine();
+            GameOver = true;
+        }
+    }
+
+    //TEST
+    private void Test()
+    {
+        WriteLine(Player.Location);
+        WriteLine();
+        for (int i = 0; i < Grid.Map.GetLength(0); i++)
+        {
+            for (int j = 0; j < Grid.Map.GetLength(0); j++)
+            {
+                Write($"{Grid.Map[i, j], -10} ");
+
+            }
+            WriteLine();
+            WriteLine();
+        }
+        WriteLine();
     }
 }

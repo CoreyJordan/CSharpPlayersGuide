@@ -14,12 +14,25 @@ internal class Grid
     /// <param name="start">The starting position of the player.</param>
     public Grid(int mapSize, Location start)
     {
+        // Create the game grid.
         Map = new RoomType[mapSize, mapSize];
         Border = new Edge[mapSize, mapSize];
-        Map[start.Row, start.Col] = RoomType.Entrance;
-        var fountain = SetRoom(mapSize);
-        Map[fountain.Row, fountain.Col] = RoomType.Fountain;
         SetBorders(mapSize);
+
+        // Set the entrance location.
+        Map[start.Row, start.Col] = RoomType.Entrance;
+
+        // Set the fountain location.
+        Location fountain = SetRoom(mapSize);
+        Map[fountain.Row, fountain.Col] = RoomType.Fountain;
+
+        // Set the pit locations.
+        int pitQuantity = GetNumberOfPits(mapSize);
+        for (int i = 0; i < pitQuantity; i++)
+        {
+            Location pit = SetRoom(mapSize);
+            Map[pit.Row, pit.Col] = RoomType.Pit;
+        }
     }
 
     /// <summary>
@@ -102,5 +115,15 @@ internal class Grid
             Border[upper, i] = Edge.Upper;
             Border[lower, i] = Edge.Lower;
         }
+    }
+
+    private int GetNumberOfPits(int mapSize)
+    {
+        int pit = 1;
+        for (int i = 4; i < mapSize; i += 2)
+        {
+            pit *= 2;
+        }
+        return pit;
     }
 }
