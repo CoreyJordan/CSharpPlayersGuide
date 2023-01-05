@@ -8,4 +8,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Using Include="System.Console">
+      <Static>True</Static>
+    </Using>
+  </ItemGroup>
+
 </Project>
