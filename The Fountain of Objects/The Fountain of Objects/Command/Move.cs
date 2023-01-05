@@ -1,4 +1,6 @@
-﻿namespace The_Fountain_of_Objects;
+﻿using The_Fountain_of_Objects.Config;
+
+namespace The_Fountain_of_Objects.Command;
 internal class Move : ICommand
 {
     /// <summary>

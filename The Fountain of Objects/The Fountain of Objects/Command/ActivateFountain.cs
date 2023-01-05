@@ -1,4 +1,7 @@
-﻿namespace The_Fountain_of_Objects;
+﻿using The_Fountain_of_Objects.Config;
+using The_Fountain_of_Objects.Enviroment;
+
+namespace The_Fountain_of_Objects.Command;
 internal class ActivateFountain : ICommand
 {
     public Location PlayerLocation { get; set; }
@@ -14,9 +17,10 @@ internal class ActivateFountain : ICommand
         {
             game.Fountain.Enabled = true;
             Display.WriteLine("You grope in the dark until you find a lever." +
-                " Pulling on the lever, you hear the dripping of water" +
-                " slowly rise to a steady flow. You have activated the " +
-                "fountain", ConsoleColor.Green);
+                " Pulling on the\nlever, you hear the dripping of water" +
+                " slowly rise to a steady\nflow. You have activated the " +
+                "fountain",
+                ConsoleColor.Green);
         }
         else
         {

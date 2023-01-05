@@ -1,4 +1,11 @@
-﻿namespace The_Fountain_of_Objects;
+﻿using System.Diagnostics.CodeAnalysis;
+using The_Fountain_of_Objects.Command;
+using The_Fountain_of_Objects.Config;
+using The_Fountain_of_Objects.Entities;
+using The_Fountain_of_Objects.Enviroment;
+using The_Fountain_of_Objects.Senses;
+
+namespace The_Fountain_of_Objects;
 internal class Game
 {
     public Grid Grid { get; set; }
@@ -29,14 +36,39 @@ internal class Game
         while (!GameOver)
         {
             PrintRoom(Player.Location);
+
+            // TODO Describe room
+            IDescription description = DescribeCurrentRoom(Player.Location);
+            description.DescribeSense(this);
+
             ICommand command = GetCommand();
             command.Execute(this);
-
-            //ReadLine(); //Testing stop point
         }
     }
 
-    public ICommand GetCommand()
+    private void PrintRoom(Location location)
+    {
+        Display.WriteLine(
+            "---------------------------------------------------------------" +
+            $"\nYou are in Room {location.Row},{location.Col}.",
+            ConsoleColor.Cyan);
+    }
+
+    private IDescription DescribeCurrentRoom(Location location)
+    {
+        var room = Grid.GetRoomType(location);
+        switch (room)
+        {
+            case RoomType.Entrance:
+                return new SenseEntrance(true);
+            case RoomType.Fountain:
+                return new SenseFountain(true);
+            default:
+                return new SenseEmpty(true);
+        }
+    }
+
+    private ICommand GetCommand()
     {
         bool validCommand;
         ICommand command;
@@ -77,13 +109,5 @@ internal class Game
 
         } while (!validCommand);
         return command;
-    }
-
-    private void PrintRoom(Location location)
-    {
-        Display.WriteLine(
-            "----------------------------------------------------------------",
-            ConsoleColor.Cyan);
-        WriteLine($"You are in Room {location.Row},{location.Col}.");
     }
 }

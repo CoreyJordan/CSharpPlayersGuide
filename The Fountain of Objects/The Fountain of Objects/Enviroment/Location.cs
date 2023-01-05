@@ -1,4 +1,4 @@
-﻿namespace The_Fountain_of_Objects;
+﻿namespace The_Fountain_of_Objects.Enviroment;
 internal record Location
 {
     public int Row { get; set; }
