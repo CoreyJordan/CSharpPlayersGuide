@@ -32,7 +32,7 @@ internal class Game
             ICommand command = GetCommand();
             command.Execute(this);
 
-            ReadLine(); //Testing stop point
+            //ReadLine(); //Testing stop point
         }
     }
 
@@ -84,6 +84,6 @@ internal class Game
         Display.WriteLine(
             "----------------------------------------------------------------",
             ConsoleColor.Cyan);
-        WriteLine($"You are in Room {location.X},{location.Y}.");
+        WriteLine($"You are in Room {location.Row},{location.Col}.");
     }
 }

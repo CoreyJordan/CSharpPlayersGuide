@@ -16,9 +16,9 @@ internal class Grid
 	{
 		Map = new RoomType[mapSize, mapSize];
 		Border = new Edge[mapSize, mapSize];
-		Map[start.X, start.Y] = RoomType.Entrance;
+		Map[start.Row, start.Col] = RoomType.Entrance;
 		var fountain = SetRoom(mapSize);
-		Map[fountain.X, fountain.Y] = RoomType.Fountain;
+		Map[fountain.Row, fountain.Col] = RoomType.Fountain;
 		SetBorders(mapSize);
 	}
 
@@ -27,7 +27,7 @@ internal class Grid
 	/// </summary>
 	public RoomType GetRoomType(Location location)
 	{
-		return Map[location.X, location.Y];
+		return Map[location.Row, location.Col];
 	}
 
 	/// <summary>
@@ -36,7 +36,7 @@ internal class Grid
 	/// </summary>
 	public Edge GetBorder(Location location)
 	{
-		return Border[location.X,location.Y];
+		return Border[location.Row, location.Col];
 	}
 
 	private Location GetRandomRoom(int max)
