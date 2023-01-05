@@ -1,10 +1,10 @@
-﻿public enum RoomType
+﻿public enum Room
 {
     Empty,
     Entrance,
     Fountain,
     Pit,
-    Maelstrom
+    Storm
 }
 
 public enum Edge

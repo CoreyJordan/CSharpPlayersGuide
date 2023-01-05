@@ -12,7 +12,7 @@ internal class ActivateFountain : ICommand
 
     public void Execute(Game game)
     {
-        if (game.Grid.GetRoomType(PlayerLocation) == RoomType.Fountain)
+        if (game.Grid.GetRoomType(PlayerLocation) == Room.Fountain)
         {
             game.Fountain.Enabled = true;
             Display.WriteLine("You grope in the dark until you find a lever." +

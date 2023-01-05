@@ -10,6 +10,7 @@ internal class Game
     public Player Player { get; }
     public Fountain Fountain { get; }
     public bool GameOver { get; set; }
+    public int GridSize { get; set; }
 
     /// <summary>
     /// Creates a new instance of the Founatain of Objects game using player
@@ -22,7 +23,8 @@ internal class Game
                 int pitQty,
                 int maelstromQty)
     {
-        Grid = new(size, start, pitQty, maelstromQty);
+        GridSize = size;
+        Grid = new(GridSize, start, pitQty, maelstromQty);
         Player = new(start);
         Fountain = new Fountain();
         GameOver = false;
@@ -33,15 +35,14 @@ internal class Game
     /// </summary>
     public void Run()
     {
-        Test(); // Displays the player location and a map of the grid
+        //Test(); // Displays the player location and a map of the grid
         while (!GameOver)
         {
             // Tell the player where they are.
             PrintRoom(Player.Location);
 
             // Tell the player what they sense in the current room.
-            var mapSize = Grid.Map.GetLength(0);
-            foreach (var description in GetSense(mapSize))
+            foreach (IDescription description in GetSenses())
             {
                 description.DescribeSense(this);
             }
@@ -62,31 +63,33 @@ internal class Game
             ConsoleColor.Cyan);
     }
 
-    private List<IDescription> GetSense(int mapSize)
+    private List<IDescription> GetSenses()
     {
         List<IDescription> sense = new();
 
-        // Add the current room to the list of sensory inputs.
         var room = Grid.GetRoomType(Player.Location);
-        var adjacentRooms = Grid.GetAdjacentTypes(Player.Location, mapSize);
-        var tangentRooms = Grid.GetTangentTypes(Player.Location, mapSize);
+        var adjacentRooms = Grid.GetAdjacentTypes(Player.Location, GridSize);
+        var tangentRooms = Grid.GetTangentTypes(Player.Location, GridSize);
 
-        if (room == RoomType.Empty) sense.Add(new SenseEmpty());
-        else if (room == RoomType.Entrance) sense.Add(new SenseEntrance(true));
-        else if (room == RoomType.Fountain) sense.Add(new SenseFountain(true));
+        // Add the current room to the list of sensory inputs.
+        if (room == Room.Empty) sense.Add(new SenseEmpty());
+        else if (room == Room.Entrance) sense.Add(new SenseEntrance(true));
+        else if (room == Room.Fountain) sense.Add(new SenseFountain(true));
 
-        foreach (var adjRoom in adjacentRooms)
+        // Add the rooms directly adjacent to the current room.
+        foreach (var adj in adjacentRooms)
         {
-            if (adjRoom == RoomType.Entrance) sense.Add(new SenseEntrance(false));
-            else if (adjRoom == RoomType.Fountain) sense.Add(new SenseFountain(false));
-            else if (adjRoom == RoomType.Pit) sense.Add(new SensePit());
-            else if (adjRoom == RoomType.Empty) sense.Add(new SenseEmpty());
-            else if (adjRoom == RoomType.Maelstrom) sense.Add(new SenseMaelstrom(false));
+            if (adj == Room.Entrance) sense.Add(new SenseEntrance(false));
+            else if (adj == Room.Fountain) sense.Add(new SenseFountain(false));
+            else if (adj == Room.Pit) sense.Add(new SensePit());
+            else if (adj == Room.Empty) sense.Add(new SenseEmpty());
+            else if (adj == Room.Storm) sense.Add(new SenseStorm(false));
         }
 
+        // Add the room diaganally adjacent to the current room.
         foreach (var tanRoom in tangentRooms)
         {
-            if (tanRoom == RoomType.Maelstrom) sense.Add(new SenseMaelstrom(true));
+            if (tanRoom == Room.Storm) sense.Add(new SenseStorm(true));
         }
 
         return sense;
@@ -138,7 +141,7 @@ internal class Game
 
     private void CheckState()
     {
-        if (Grid.GetRoomType(Player.Location) == RoomType.Entrance &&
+        if (Grid.GetRoomType(Player.Location) == Room.Entrance &&
             Fountain.Enabled)
         {
             Display.WriteLine("VICTORY! You have activated the Fountain of " +
@@ -147,12 +150,34 @@ internal class Game
             ReadLine();
             GameOver = true;
         }
-        else if (Grid.GetRoomType(Player.Location) == RoomType.Pit)
+        else if (Grid.GetRoomType(Player.Location) == Room.Pit)
         {
             Display.WriteLine("DEATH! You have fallen into a pit trap",
                 ConsoleColor.Red);
             ReadLine();
             GameOver = true;
+        }
+        else if (Grid.GetRoomType(Player.Location) == Room.Storm)
+        {
+            Display.WriteLine("The Maelstrom slams into you, sending you " +
+                "cartwheeling several\nrooms away.",
+                ConsoleColor.Red);
+
+            // Maelstrom blows away to a new random location.
+            Location maelstrom = Grid.SetRoom(GridSize);
+            Grid.Map[maelstrom.Row, maelstrom.Col] = Room.Storm;
+            Grid.Map[Player.Location.Row, Player.Location.Col] = Room.Empty;
+
+            // Move the player north 1 room and east 2 rooms.
+            List<ICommand> blownAway = new();
+            blownAway.Add(new Move(Direction.North));
+            blownAway.Add(new Move(Direction.East));
+            blownAway.Add(new Move(Direction.East));
+            foreach (var move in blownAway)
+            {
+                move.Execute(this);
+            }
+            ReadLine();
         }
     }
 
@@ -161,9 +186,9 @@ internal class Game
     {
         WriteLine(Player.Location);
         WriteLine();
-        for (int i = 0; i < Grid.Map.GetLength(0); i++)
+        for (int i = 0; i < GridSize; i++)
         {
-            for (int j = 0; j < Grid.Map.GetLength(0); j++)
+            for (int j = 0; j < GridSize; j++)
             {
                 Write($"{Grid.Map[i, j], -10} ");
 

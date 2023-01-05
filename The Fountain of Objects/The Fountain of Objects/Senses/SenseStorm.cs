@@ -1,8 +1,8 @@
 ﻿namespace The_Fountain_of_Objects.Senses;
-internal class SenseMaelstrom : IDescription
+internal class SenseStorm : IDescription
 {
     public bool Tangent { get; set; }
-    public SenseMaelstrom(bool tangent)
+    public SenseStorm(bool tangent)
     {
         Tangent = tangent;
     }

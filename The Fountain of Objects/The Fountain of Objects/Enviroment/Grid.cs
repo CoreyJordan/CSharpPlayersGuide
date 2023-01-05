@@ -4,7 +4,7 @@ internal class Grid
     /// <summary>
     /// 2D grid of rooms by type.
     /// </summary>
-    public RoomType[,] Map { get; set; }
+    public Room[,] Map { get; set; }
     public Edge[,] Border { get; }
 
     /// <summary>
@@ -15,36 +15,36 @@ internal class Grid
     public Grid(int mapSize, Location start, int pitQty, int maelQty)
     {
         // Create the game grid.
-        Map = new RoomType[mapSize, mapSize];
+        Map = new Room[mapSize, mapSize];
         Border = new Edge[mapSize, mapSize];
         SetBorders(mapSize);
 
         // Set the entrance location.
-        Map[start.Row, start.Col] = RoomType.Entrance;
+        Map[start.Row, start.Col] = Room.Entrance;
 
         // Set the fountain location.
         Location fountain = SetRoom(mapSize);
-        Map[fountain.Row, fountain.Col] = RoomType.Fountain;
+        Map[fountain.Row, fountain.Col] = Room.Fountain;
 
         // Set the pit locations.
         for (int i = 0; i < pitQty; i++)
         {
             Location pit = SetRoom(mapSize);
-            Map[pit.Row, pit.Col] = RoomType.Pit;
+            Map[pit.Row, pit.Col] = Room.Pit;
         }
 
         // Set Maelstrom locations.
         for (int i = 0; i < maelQty; i++)
         {
             Location maelstrom = SetRoom(mapSize);
-            Map[maelstrom.Row, maelstrom.Col] = RoomType.Maelstrom;
+            Map[maelstrom.Row, maelstrom.Col] = Room.Storm;
         }
     }
 
     /// <summary>
     /// Returns the room designation of a particular location.
     /// </summary>
-    public RoomType GetRoomType(Location location)
+    public Room GetRoomType(Location location)
     {
         return Map[location.Row, location.Col];
     }
@@ -61,9 +61,9 @@ internal class Grid
     /// <summary>
     /// Compile a list of adjacent room types to the present location.
     /// </summary>
-    public List<RoomType> GetAdjacentTypes(Location location, int size)
+    public List<Room> GetAdjacentTypes(Location location, int size)
     {
-        List<RoomType> types = new();
+        List<Room> types = new();
 
         // Collect all possible adjacent locations.
         List<Location> adjLocations = new()
@@ -86,9 +86,9 @@ internal class Grid
         return types;
     }
 
-    public List<RoomType> GetTangentTypes(Location location, int size)
+    public List<Room> GetTangentTypes(Location location, int size)
     {
-        List<RoomType> types = new();
+        List<Room> types = new();
 
         // Collect all possible tangent locations.
         List<Location> tanLocations = new()
@@ -117,7 +117,7 @@ internal class Grid
     public Location SetRoom(int max)
     {
         var randomRoom = GetRandomRoom(max);
-        while (GetRoomType(randomRoom) != RoomType.Empty)
+        while (GetRoomType(randomRoom) != Room.Empty)
         {
             randomRoom = GetRandomRoom(max);
         }
