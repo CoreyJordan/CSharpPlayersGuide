@@ -7,8 +7,8 @@ namespace The_Fountain_of_Objects;
 internal class Game
 {
     public Grid Grid { get; }
-    public Player Player { get; }
-    public Fountain Fountain { get; }
+    public Player PC { get; }
+    public Enviroment.Fountain Fountain { get; }
     public bool GameOver { get; set; }
     public int GridSize { get; set; }
 
@@ -22,12 +22,13 @@ internal class Game
                 Location start,
                 int pitQty,
                 int maelstromQty,
-                int amaroksQty)
+                int amaroksQty,
+                int arrows)
     {
         GridSize = size;
         Grid = new(GridSize, start, pitQty, maelstromQty, amaroksQty);
-        Player = new(start);
-        Fountain = new Fountain();
+        PC = new(start, arrows);
+        Fountain = new Enviroment.Fountain();
         GameOver = false;
     }
 
@@ -40,7 +41,7 @@ internal class Game
         while (!GameOver)
         {
             // Tell the player where they are.
-            PrintRoom(Player.Location);
+            PrintRoom(PC.Location);
 
             // Tell the player what they sense in the current room.
             foreach (IDescription description in GetSenses())
@@ -60,7 +61,8 @@ internal class Game
     {
         Display.WriteLine(
             "---------------------------------------------------------------" +
-            $"\nYou are in Room {location.Row},{location.Col}.",
+            $"\nYou are in Room {location.Row},{location.Col}.\n" +
+            $"You have {PC.Arrows} arrows remaining.",
             ConsoleColor.Cyan);
     }
 
@@ -68,9 +70,9 @@ internal class Game
     {
         List<IDescription> sense = new();
 
-        var room = Grid.GetRoomType(Player.Location);
-        var adjacentRooms = Grid.GetAdjacentTypes(Player.Location, GridSize);
-        var tangentRooms = Grid.GetTangentTypes(Player.Location, GridSize);
+        var room = Grid.GetRoomType(PC.Location);
+        var adjacentRooms = Grid.GetAdjacentTypes(PC.Location, GridSize);
+        var tangentRooms = Grid.GetTangentTypes(PC.Location, GridSize);
 
         // Add the current room to the list of sensory inputs.
         if (room == Room.Empty) sense.Add(new SenseEmpty());
@@ -101,33 +103,22 @@ internal class Game
     private ICommand GetCommand()
     {
         bool validCommand;
-        ICommand command;
+        ICommand comm;
         do
         {
             validCommand = true;
             Write("What do you want to do? ");
-            string? choice = ReadLine() ?? "";
+            string? choice = ReadLine()?.ToLower() ?? "";
 
-            if (choice.ToLower().IndexOf("north") > -1)
-            {
-                command = new Move(Direction.North);
-            }
-            else if (choice.ToLower().IndexOf("south") > -1)
-            {
-                command = new Move(Direction.South);
-            }
-            else if (choice.ToLower().IndexOf("east") > -1)
-            {
-                command = new Move(Direction.East);
-            }
-            else if (choice.ToLower().IndexOf("west") > -1)
-            {
-                command = new Move(Direction.West);
-            }
-            else if (choice.ToLower().IndexOf("fountain") > -1)
-            {
-                command = new ActivateFountain(Player.Location);
-            }
+            if (choice.Contains("move n")) comm = new Move(Dir.North);
+            else if (choice.Contains("move s")) comm = new Move(Dir.South);
+            else if (choice.Contains("move e")) comm = new Move(Dir.East);
+            else if (choice.Contains("move w")) comm = new Move(Dir.West);
+            else if (choice.Contains("foun")) comm = new Activate(PC.Location);
+            else if (choice.Contains("fire n")) comm = new Fire(Dir.North);
+            else if (choice.Contains("fire s")) comm = new Fire(Dir.South);
+            else if (choice.Contains("fire w")) comm = new Fire(Dir.West);
+            else if (choice.Contains("fire e")) comm = new Fire(Dir.East);
             else
             {
                 Display.WriteLine("Hmm. I didn't quite get that.",
@@ -135,16 +126,16 @@ internal class Game
                 validCommand = false;
                 // This is a placeholder command, not expected to ever reach.
                 // The compiler doesn't see the loop until we get valid command
-                command = new Move(Direction.None);
+                comm = new Move(Dir.None);
             }
 
         } while (!validCommand);
-        return command;
+        return comm;
     }
 
     private void CheckState()
     {
-        var room = Grid.GetRoomType(Player.Location);
+        var room = Grid.GetRoomType(PC.Location);
 
         if (room == Room.Entrance && Fountain.Enabled)
         {
@@ -170,13 +161,13 @@ internal class Game
             // Maelstrom blows away to a new random location.
             Location maelstrom = Grid.SetRoom(GridSize);
             Grid.Map[maelstrom.Row, maelstrom.Col] = Room.Storm;
-            Grid.Map[Player.Location.Row, Player.Location.Col] = Room.Empty;
+            Grid.Map[PC.Location.Row, PC.Location.Col] = Room.Empty;
 
             // Move the player north 1 room and east 2 rooms.
             List<ICommand> blownAway = new();
-            blownAway.Add(new Move(Direction.North));
-            blownAway.Add(new Move(Direction.East));
-            blownAway.Add(new Move(Direction.East));
+            blownAway.Add(new Move(Dir.North));
+            blownAway.Add(new Move(Dir.East));
+            blownAway.Add(new Move(Dir.East));
             foreach (var move in blownAway)
             {
                 move.Execute(this);
@@ -195,7 +186,7 @@ internal class Game
     //TEST
     private void Test()
     {
-        WriteLine(Player.Location);
+        WriteLine(PC.Location);
         WriteLine();
         for (int i = 0; i < GridSize; i++)
         {

@@ -16,8 +16,14 @@ Game CreateGame()
     int pitQty = GetNumberofPits(size);
     int maelstromsQty = GetNumberofMaelstroms(size);
     int amaroksQty = GetNumberOfAmaroks(size);
+    int startingArrows = 5;
 
-    Game game = new(mapSize, start, pitQty, maelstromsQty, amaroksQty);
+    Game game = new(mapSize,
+                    start,
+                    pitQty,
+                    maelstromsQty,
+                    amaroksQty,
+                    startingArrows);
 
     return game;
 }

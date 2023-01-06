@@ -1,11 +1,11 @@
 ﻿using The_Fountain_of_Objects.Enviroment;
 
 namespace The_Fountain_of_Objects.Command;
-internal class ActivateFountain : ICommand
+internal class Activate : ICommand
 {
     public Location PlayerLocation { get; set; }
 
-    public ActivateFountain(Location playerLocation)
+    public Activate(Location playerLocation)
     {
         PlayerLocation = playerLocation;
     }

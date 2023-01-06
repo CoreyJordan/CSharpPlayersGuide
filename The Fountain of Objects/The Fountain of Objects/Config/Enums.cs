@@ -21,7 +21,7 @@ public enum Edge
     CornerLowRight
 }
 
-public enum Direction
+public enum Dir
 {
     None,
     North,

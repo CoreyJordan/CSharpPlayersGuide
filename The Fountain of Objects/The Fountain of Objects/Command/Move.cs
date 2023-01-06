@@ -4,36 +4,36 @@ internal class Move : ICommand
     /// <summary>
     /// Direction to move the entity.
     /// </summary>
-    public Direction Direction { get; }
+    public Dir Direction { get; }
 
-    public Move(Direction direction)
+    public Move(Dir direction)
     {
         Direction = direction;
     }
 
     public void Execute(Game game)
     {
-        var border = game.Grid.GetBorder(game.Player.Location);
+        var border = game.Grid.GetBorder(game.PC.Location);
 
-        if (Direction == Direction.North && border != Edge.Upper
+        if (Direction == Dir.North && border != Edge.Upper
             && border != Edge.CornerUpLeft && border != Edge.CornerUpRight)
         {
-            game.Player.Location.Row -= 1;
+            game.PC.Location.Row -= 1;
         }
-        else if (Direction == Direction.South && border != Edge.Lower
+        else if (Direction == Dir.South && border != Edge.Lower
             && border != Edge.CornerLowLeft && border != Edge.CornerLowRight)
         {
-            game.Player.Location.Row += 1;
+            game.PC.Location.Row += 1;
         }
-        else if (Direction == Direction.West && border != Edge.Left
+        else if (Direction == Dir.West && border != Edge.Left
             && border != Edge.CornerUpLeft && border != Edge.CornerLowLeft)
         {
-            game.Player.Location.Col -= 1;
+            game.PC.Location.Col -= 1;
         }
-        else if (Direction == Direction.East && border != Edge.Right
+        else if (Direction == Dir.East && border != Edge.Right
             && border != Edge.CornerUpRight && border != Edge.CornerLowRight)
         {
-            game.Player.Location.Col += 1;
+            game.PC.Location.Col += 1;
         }
         else
         {
