@@ -12,7 +12,11 @@ internal class Grid
     /// </summary>
     /// <param name="mapSize">The width and height of the map grid.</param>
     /// <param name="start">The starting position of the player.</param>
-    public Grid(int mapSize, Location start, int pitQty, int maelQty)
+    public Grid(int mapSize,
+                Location start,
+                int pitQty,
+                int maelQty,
+                int amaroksQty)
     {
         // Create the game grid.
         Map = new Room[mapSize, mapSize];
@@ -39,6 +43,13 @@ internal class Grid
             Location maelstrom = SetRoom(mapSize);
             Map[maelstrom.Row, maelstrom.Col] = Room.Storm;
         }
+        // Set Amaroks locations.
+        for (int i = 0; i < amaroksQty; i++)
+        {
+            Location amarok = SetRoom(mapSize);
+            Map[amarok.Row, amarok.Col] = Room.Amarok;
+        }
+
     }
 
     /// <summary>

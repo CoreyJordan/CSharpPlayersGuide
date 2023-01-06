@@ -21,10 +21,11 @@ internal class Game
     public Game(int size,
                 Location start,
                 int pitQty,
-                int maelstromQty)
+                int maelstromQty,
+                int amaroksQty)
     {
         GridSize = size;
-        Grid = new(GridSize, start, pitQty, maelstromQty);
+        Grid = new(GridSize, start, pitQty, maelstromQty, amaroksQty);
         Player = new(start);
         Fountain = new Fountain();
         GameOver = false;
@@ -35,7 +36,7 @@ internal class Game
     /// </summary>
     public void Run()
     {
-        //Test(); // Displays the player location and a map of the grid
+        Test(); // Displays the player location and a map of the grid
         while (!GameOver)
         {
             // Tell the player where they are.
@@ -84,12 +85,14 @@ internal class Game
             else if (adj == Room.Pit) sense.Add(new SensePit());
             else if (adj == Room.Empty) sense.Add(new SenseEmpty());
             else if (adj == Room.Storm) sense.Add(new SenseStorm(false));
+            else if (adj == Room.Amarok) sense.Add(new SenseAmarok(false));
         }
 
         // Add the room diaganally adjacent to the current room.
         foreach (var tanRoom in tangentRooms)
         {
             if (tanRoom == Room.Storm) sense.Add(new SenseStorm(true));
+            else if (tanRoom == Room.Amarok) sense.Add(new SenseAmarok(true));
         }
 
         return sense;
@@ -141,8 +144,9 @@ internal class Game
 
     private void CheckState()
     {
-        if (Grid.GetRoomType(Player.Location) == Room.Entrance &&
-            Fountain.Enabled)
+        var room = Grid.GetRoomType(Player.Location);
+
+        if (room == Room.Entrance && Fountain.Enabled)
         {
             Display.WriteLine("VICTORY! You have activated the Fountain of " +
                 "Objects and escaped\nthe cavern with your life.",
@@ -150,14 +154,14 @@ internal class Game
             ReadLine();
             GameOver = true;
         }
-        else if (Grid.GetRoomType(Player.Location) == Room.Pit)
+        else if (room == Room.Pit)
         {
             Display.WriteLine("DEATH! You have fallen into a pit trap",
                 ConsoleColor.Red);
             ReadLine();
             GameOver = true;
         }
-        else if (Grid.GetRoomType(Player.Location) == Room.Storm)
+        else if (room == Room.Storm)
         {
             Display.WriteLine("The Maelstrom slams into you, sending you " +
                 "cartwheeling several\nrooms away.",
@@ -178,6 +182,13 @@ internal class Game
                 move.Execute(this);
             }
             ReadLine();
+        }
+        else if (room == Room.Amarok)
+        {
+            Display.WriteLine("DEATH! You have been torn apart by an amarok",
+                ConsoleColor.Red);
+            ReadLine();
+            GameOver = true;
         }
     }
 

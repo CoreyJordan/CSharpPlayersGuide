@@ -4,7 +4,8 @@
     Entrance,
     Fountain,
     Pit,
-    Storm
+    Storm,
+    Amarok
 }
 
 public enum Edge
