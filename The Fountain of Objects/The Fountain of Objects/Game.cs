@@ -4,6 +4,7 @@ using The_Fountain_of_Objects.Enviroment;
 using The_Fountain_of_Objects.Senses;
 
 namespace The_Fountain_of_Objects;
+
 internal class Game
 {
     public Grid Grid { get; }
@@ -37,7 +38,8 @@ internal class Game
     /// </summary>
     public void Run()
     {
-        Test(); // Displays the player location and a map of the grid
+        // Test(); // Displays the player location and a map of the grid
+        var startTime = DateTime.Now;
         while (!GameOver)
         {
             // Tell the player where they are.
@@ -53,7 +55,9 @@ internal class Game
             ICommand command = GetCommand();
             command.Execute(this);
 
-            CheckState();
+            TimeSpan gameDuration = new();
+            gameDuration = DateTime.Now - startTime;
+            CheckState(gameDuration);
         }
     }
 
@@ -128,12 +132,11 @@ internal class Game
                 // The compiler doesn't see the loop until we get valid command
                 comm = new Move(Dir.None);
             }
-
         } while (!validCommand);
         return comm;
     }
 
-    private void CheckState()
+    private void CheckState(TimeSpan gameTime)
     {
         var room = Grid.GetRoomType(PC.Location);
 
@@ -142,14 +145,12 @@ internal class Game
             Display.WriteLine("VICTORY! You have activated the Fountain of " +
                 "Objects and escaped\nthe cavern with your life.",
                 ConsoleColor.Green);
-            ReadLine();
             GameOver = true;
         }
         else if (room == Room.Pit)
         {
             Display.WriteLine("DEATH! You have fallen into a pit trap",
                 ConsoleColor.Red);
-            ReadLine();
             GameOver = true;
         }
         else if (room == Room.Storm)
@@ -172,14 +173,18 @@ internal class Game
             {
                 move.Execute(this);
             }
-            ReadLine();
         }
         else if (room == Room.Amarok)
         {
-            Display.WriteLine("DEATH! You have been torn apart by an amarok",
+            Display.WriteLine("DEATH You have been torn apart by an amarok",
                 ConsoleColor.Red);
-            ReadLine();
             GameOver = true;
+        }
+
+        if (GameOver)
+        {
+            WriteLine("Time elapsed: " + gameTime.ToString(@"mm\:ss"));
+            ReadLine();
         }
     }
 
@@ -192,8 +197,7 @@ internal class Game
         {
             for (int j = 0; j < GridSize; j++)
             {
-                Write($"{Grid.Map[i, j], -10} ");
-
+                Write($"{Grid.Map[i, j],-10} ");
             }
             WriteLine();
             WriteLine();

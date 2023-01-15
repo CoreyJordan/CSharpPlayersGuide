@@ -1,18 +1,15 @@
-﻿using System.Drawing;
-using The_Fountain_of_Objects;
+﻿using The_Fountain_of_Objects;
 using The_Fountain_of_Objects.Enviroment;
 
 Game game = CreateGame();
 game.Run();
-
-
 
 Game CreateGame()
 {
     MapSize size = GetMapSize();
 
     int mapSize = SetMapSize(size);
-    Location start = new(0,0);
+    Location start = new(0, 0);
     int pitQty = GetNumberofPits(size);
     int maelstromsQty = GetNumberofMaelstroms(size);
     int amaroksQty = GetNumberOfAmaroks(size);
@@ -40,7 +37,7 @@ MapSize GetMapSize()
             "small" => MapSize.Small,
             "medium" => MapSize.Medium,
             "large" => MapSize.Large,
-            _=> MapSize.None
+            _ => MapSize.None
         };
     }
     return size;
@@ -64,7 +61,7 @@ int GetNumberofPits(MapSize choice)
         MapSize.Small => 1,
         MapSize.Medium => 2,
         MapSize.Large => 4,
-        _=> 0
+        _ => 0
     };
 }
 
