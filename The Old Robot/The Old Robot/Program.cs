@@ -8,14 +8,20 @@ public class Program
 
         while (true)
         {
-            int i = 0;
-            while (i < 3)
+            bool done = false;
+            while (!done)
             {
                 try
                 {
-                    string? comm = GetCommand(i+1);
-                    robby.Commands[i] = RouteCommand(comm);
-                    i++;
+                    string? comm = GetCommand();
+                    if (comm == "E")
+                    {
+                        done = true;
+                    }
+                    else
+                    {
+                        robby.Commands.Add(RouteCommand(comm));
+                    }
                 }
                 catch
                 {
@@ -26,18 +32,18 @@ public class Program
             robby.Run();
 
             Console.ReadLine();
-
         }
 
-        string GetCommand(int commCount)
+        string GetCommand()
         {
-            Console.WriteLine($"Select {commCount} of 3 commands:");
+            Console.WriteLine($"Select a command or execute stored commands.");
             Console.WriteLine("\tI: Power On\n" +
                               "\tO: Power off\n" +
                               "\tW: Move North\n" +
                               "\tA: Move West\n" +
                               "\tS: Move South\n" +
-                              "\tD: Move East");
+                              "\tD: Move East\n" +
+                              "\tE: Execute");
             return Console.ReadLine()!.ToUpper();
         }
 
@@ -69,7 +75,8 @@ public class Robot
     public int X { get; set; }
     public int Y { get; set; }
     public bool IsPowered { get; set; }
-    public IRobotCommand?[] Commands { get; } = new IRobotCommand?[3];
+
+    public List<IRobotCommand> Commands { get; } = new();
 
     public void Run()
     {
